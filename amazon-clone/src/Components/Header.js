@@ -3,11 +3,21 @@ import "./Header.css";
 import LocationOnIcon from "@material-ui/icons/LocationOn";
 import SearchIcon from "@material-ui/icons/Search";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
+import { Link } from "react-router-dom";
+import { useStateValue } from "../StateProvider";
 
 function Header() {
+  const [{ basket }] = useStateValue();
+
   return (
     <div className="header_container">
-      <img className="header_logo" src="./amazon_PNG11.png" alt="Amazon_Logo" />
+      <Link to="/">
+        <img
+          className="header_logo"
+          src="./amazon_PNG11.png"
+          alt="Amazon_Logo"
+        />
+      </Link>
       <div className="header_nav">
         <LocationOnIcon className="header_locationIcon" />
         <div className="header_option">
@@ -33,10 +43,14 @@ function Header() {
           <span className="header_option_lineone">Your</span>
           <span className="header_option_linetwo">Prime</span>
         </div>
-        <div className="header_optionCart">
-          <ShoppingCartIcon />
-          <span className="header_option_linetwo header_cartCount">0</span>
-        </div>
+        <Link to="/cart">
+          <div className="header_optionCart">
+            <ShoppingCartIcon />
+            <span className="header_option_linetwo header_cartCount">
+              {basket?.length}
+            </span>
+          </div>
+        </Link>
       </div>
     </div>
   );

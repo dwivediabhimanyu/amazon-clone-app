@@ -1,0 +1,40 @@
+.cart {
+  display: flex;
+  padding: 20px;
+  justify-content: center;
+  height: max-content;
+}
+
+.cart_basketItems {
+  background-color: white;
+  border-radius: 5px;
+  min-height: 400px;
+}
+
+.cart_adBanner {
+  width: 100%;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+.cart_title {
+  margin-right: 10px;
+  padding: 10px;
+  border-bottom: 1px solid lightgray;
+}
+
+.cart_right {
+  margin-left: 15px;
+}
+
+.cart_right > img {
+  width: 100%;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.cart_empty {
+  display: flex;
+  justify-content: center;
+  padding-top: 125px;
+}

@@ -40,24 +40,28 @@ function Home() {
         </div>
         <div className="home_row">
           <Product
+            id={11}
             title="The Richest Man in Babylon"
             price={499}
             image="https://images-na.ssl-images-amazon.com/images/I/81NYuWzsJcS.jpg"
             rating={3}
           />
           <Product
+            id={12}
             title="The Richest Man in Babylon"
             price={799}
             image="https://images-na.ssl-images-amazon.com/images/I/81NYuWzsJcS.jpg"
             rating={4}
           />
           <Product
+            id={13}
             title="The Richest Man in Babylon"
             price={999}
             image="https://images-na.ssl-images-amazon.com/images/I/81NYuWzsJcS.jpg"
             rating={2}
           />
           <Product
+            id={14}
             title="The Richest Man in Babylon"
             price={1299}
             image="https://images-na.ssl-images-amazon.com/images/I/81NYuWzsJcS.jpg"
