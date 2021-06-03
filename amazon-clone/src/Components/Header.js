@@ -39,7 +39,12 @@ function Header() {
       <div className="header_nav">
         <Link to={!user && "/login"}>
           <div className="header_option" onClick={handleLogout}>
-            <span className="header_option_lineone">Hello User</span>
+            <span className="header_option_lineone">
+              Hello{" "}
+              {user
+                ? user.email.substring(0, user.email.lastIndexOf("@"))
+                : "User"}
+            </span>
             <span className="header_option_linetwo">
               {user ? "Sign Out" : "Sign In"}
             </span>
