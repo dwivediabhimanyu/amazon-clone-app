@@ -21,6 +21,7 @@
   border: 1px solid;
   margin-top: 10px;
   border-color: #a88734 #9c7e31 #816a29;
+  background: linear-gradient(to bottom, #f7dfa5, #f0c14b);
   color: black;
 }
 
