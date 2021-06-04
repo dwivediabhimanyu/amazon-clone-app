@@ -3,7 +3,7 @@ import "./CartItem.css";
 import CurrencyFormat from "react-currency-format";
 import { useStateValue } from "../StateProvider";
 
-function CartItem({ id, title, image, price, rating }) {
+function CartItem({ id, title, image, price, rating, hideBtn }) {
   const [{ basket }, dispatch] = useStateValue();
 
   const removeFromCart = () => {
@@ -38,7 +38,7 @@ function CartItem({ id, title, image, price, rating }) {
               <p key={i}>⭐</p>
             ))}
         </div>
-        <button onClick={removeFromCart}>Remove from cart</button>
+        {!hideBtn && <button onClick={removeFromCart}>Remove from cart</button>}
       </div>
     </div>
   );

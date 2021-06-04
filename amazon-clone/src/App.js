@@ -6,14 +6,11 @@ import Checkout from "./Components/Checkout";
 import Header from "./Components/Header";
 import Home from "./Components/Home";
 import Login from "./Components/Login";
+import Orders from "./Components/Orders";
 import { auth } from "./firebase";
+import ProtectedRoute from "./ProtectedRoute";
+import AuthProvider from "./firebaseAuthContext";
 import { useStateValue } from "./StateProvider";
-import { loadStripe } from "@stripe/stripe-js";
-import { Elements } from "@stripe/react-stripe-js";
-
-const promise = loadStripe(
-  "pk_test_51IyXCjSAgyCBE9zcQGl9bscRXjmWXqexAuY639uPgzeB1CC4MU4ahTGp6geYULtCBXY6fMVHMHbAYGYXvglJVkzY005M29Pjlf"
-);
 
 function App() {
   const [{ user }, dispatch] = useStateValue();
@@ -36,25 +33,29 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <Switch>
-          <Route path="/login">
-            <Login />
-          </Route>
-          <Route path="/cart">
-            <Header />
-            <Cart />
-          </Route>
-          <Route path="/checkout">
-            <Header />
-            <Elements stripe={promise}>
+        <AuthProvider>
+          <Switch>
+            <Route path="/login">
+              <Login />
+            </Route>
+            <ProtectedRoute redirectTo="/login" path="/orders">
+              <Header />
+              <Orders />
+            </ProtectedRoute>
+            <Route path="/cart">
+              <Header />
+              <Cart />
+            </Route>
+            <ProtectedRoute redirectTo="/login" path="/checkout">
+              <Header />
               <Checkout />
-            </Elements>
-          </Route>
-          <Route path="/">
-            <Header />
-            <Home />
-          </Route>
-        </Switch>
+            </ProtectedRoute>
+            <Route path="/">
+              <Header />
+              <Home />
+            </Route>
+          </Switch>
+        </AuthProvider>
       </div>
     </Router>
   );

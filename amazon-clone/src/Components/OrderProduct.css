@@ -1,0 +1,33 @@
+.order {
+  padding: 40px;
+  margin: 20px 0px;
+  border: 1px solid lightgray;
+  background-color: white;
+  position: relative;
+}
+
+.order_details_header {
+  display: flex;
+  justify-content: space-between;
+  height: 60px;
+  border-bottom: 1px solid lightgray;
+}
+
+.order_details_section {
+  display: flex;
+  flex-direction: column;
+}
+
+.order_details_lineone {
+  font-size: 15px;
+  font-weight: 500;
+  font-variant: small-caps;
+}
+.order_details_linetwo {
+  font-size: 14px;
+}
+.order_status {
+  color: green;
+
+  font-weight: 600;
+}

@@ -2,60 +2,95 @@ import React, { useState, useEffect } from "react";
 import "./Checkout.css";
 import CartItem from "./CartItem";
 import { useStateValue } from "../StateProvider";
-import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import axios from "../axios";
 import { useHistory } from "react-router-dom";
-
+import { db } from "../firebase";
 function Checkout() {
   const [{ user, basket }, dispatch] = useStateValue();
   const history = useHistory();
   const [error, setError] = useState(null);
   const [disabled, setDisabled] = useState(null);
-  const [succeeded, setSucceeded] = useState(false);
   const [processing, setProcessing] = useState("");
-  const [clientKey, setclientKey] = useState("");
-
-  const stripe = useStripe();
-  const elements = useElements();
+  const [amount, setAmount] = useState(0);
+  const [orderId, setOrderId] = useState("");
 
   useEffect(() => {
     const amount = basket?.reduce((a, b) => a + b.price, 0);
+    setAmount(amount);
     const getClientKey = async () => {
       const res = await axios({
         method: "GET",
         url: `/createOrder?total=${amount}`,
       });
-      console.log(res.data);
+      setOrderId(res.data.order.id);
     };
     if (amount > 0) {
+      setDisabled(false);
       getClientKey();
     } else {
+      setDisabled(true);
       console.log("Basket Empty!");
     }
   }, [basket]);
 
+  useEffect(() => {
+    let src = "https://checkout.razorpay.com/v1/checkout.js";
+    let script = document.createElement("script");
+    script.src = src;
+    script.async = true;
+    const onScriptLoad = () => {
+      console.log("Script Loaded");
+    };
+    script.addEventListener("load", onScriptLoad);
+    document.body.appendChild(script);
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setProcessing(true);
+    const options = {
+      key: "rzp_test_ULaAj7XZQ3AJZJ",
+      amount: `${amount.toString()}`,
+      currency: "INR",
+      name: "Amazon Clone",
+      description: "Payment for your  fake order.",
+      image: "http://pngimg.com/uploads/amazon/amazon_PNG27.png",
+      order_id: `${orderId}`,
+      handler: function (response) {
+        // alert(response.razorpay_payment_id);
+        // alert(response.razorpay_order_id);
+        // alert(response.razorpay_signature);
 
-    const payload = await stripe
-      .confirmCardPayment(clientKey, {
-        payment_method: {
-          card: elements.getElement(CardElement),
-        },
-      })
-      .then(({ paymentIntent }) => {
-        setSucceeded(true);
-        setError(null);
-        setProcessing(false);
-        history.replaceState("/orders");
-      });
-  };
-
-  const handleChange = (event) => {
-    console.log(event.empty);
-    setDisabled(event.empty);
-    setError(event.error ? event.error.message : "");
+        db.collection("users")
+          .doc(user?.uid)
+          .collection("orders")
+          .doc(response.razorpay_payment_id)
+          .set({
+            basket: basket,
+            amount: amount,
+            orderId: response.razorpay_order_id,
+            signature: response.razorpay_signature,
+            status: "Under Processing",
+          });
+        dispatch({
+          type: "EMPTY_CART",
+        });
+        history.replace("/orders");
+      },
+      prefill: {
+        name: "Amazon Clone LLC",
+        email: "clone.amazon@fake.com",
+        contact: "9999999999",
+      },
+      theme: {
+        color: "#f0c14b",
+      },
+    };
+    const paymentObject = new window.Razorpay(options);
+    paymentObject.open();
+    paymentObject.on("payment.failed", function (response) {
+      setError(response.error.reason);
+    });
   };
 
   return (
@@ -89,6 +124,7 @@ function Checkout() {
                   image={item.image}
                   price={item.price}
                   rating={item.rating}
+                  hideBtn
                 />
               ))}
 
@@ -102,10 +138,9 @@ function Checkout() {
           <div className="checkout_section_paymentDetails">
             <p>Card Number</p>
             <form onSubmit={handleSubmit}>
-              <CardElement onChange={handleChange} />
               <button
                 className="checkout_section_paymentDetailsBtn"
-                disabled={processing || disabled || succeeded}
+                disabled={processing || disabled}
               >
                 <span>
                   {processing ? (

@@ -1,7 +1,7 @@
 .cartItem {
   display: flex;
-  border-bottom: 1px solid lightgray;
   padding: 20px;
+  width: 90%;
 }
 
 .cartItem_info {
@@ -9,14 +9,14 @@
 }
 
 .cartItem_image {
-  height: 180px;
-  width: 180px;
+  height: 150px;
+  width: 150px;
   object-fit: contain;
 }
 .cartItem_info > button {
   background-color: #f0c14b;
   border-radius: 2px;
-  width: 100%;
+  width: 200px;
   height: 30px;
   border: 1px solid;
   margin-top: 10px;

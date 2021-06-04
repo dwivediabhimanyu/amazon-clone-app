@@ -11,6 +11,7 @@ function Cart() {
     <div className="cart">
       <div className="cart_left">
         <img
+          className="cart_adBanner"
           src="https://m.media-amazon.com/images/G/31/img19/AmazonPay/HFC_21/Jun_GTM/PC_Dashboar_770x150_2._CB667412567_.jpg"
           alt="cart_adBanner"
         />
