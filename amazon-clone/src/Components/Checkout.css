@@ -37,7 +37,7 @@
   background-color: rgb(234, 237, 237);
 }
 
-.checkout_section_paymentDetails > button {
+.checkout_section_paymentDetailsBtn {
   margin-left: auto;
   margin-right: auto;
   background-color: #f0c14b;
@@ -49,4 +49,8 @@
   border-color: #a88734 #9c7e31 #816a29;
   background: linear-gradient(to bottom, #f7dfa5, #f0c14b);
   color: black;
+}
+
+.checkout_section_paymentDetailsBt:disabled {
+  color: rgb(150, 150, 150);
 }
