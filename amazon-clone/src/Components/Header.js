@@ -27,8 +27,15 @@ function Header() {
       <div className="header_nav">
         <LocationOnIcon className="header_locationIcon" />
         <div className="header_option">
-          <span className="header_option_lineone">Hello</span>
-          <span className="header_option_linetwo">Select your address</span>
+          <span className="header_option_lineone">
+            {user
+              ? "Deliver to " +
+                user.email.substring(0, user.email.lastIndexOf("@"))
+              : "Hello"}
+          </span>
+          <span className="header_option_linetwo">
+            {user ? "Lucknow 226005" : "Select your address"}
+          </span>
         </div>
       </div>
 

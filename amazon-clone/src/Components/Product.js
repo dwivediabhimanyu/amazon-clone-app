@@ -32,11 +32,7 @@ function Product({ id, title, image, price, rating }) {
               <p key={i}>⭐</p>
             ))}
         </div>
-        <img
-          src="https://images-na.ssl-images-amazon.com/images/I/81NYuWzsJcS.jpg"
-          className="product_image"
-          alt="Product"
-        />
+        <img src={image} className="product_image" alt="Product" />
         <button className="product_addToCartButton" onClick={addToCart}>
           Add to Cart
         </button>
