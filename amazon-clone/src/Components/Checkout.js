@@ -4,27 +4,27 @@ import CartItem from "./CartItem";
 import { useStateValue } from "../StateProvider";
 import axios from "../axios";
 import { useHistory } from "react-router-dom";
+import { getBasketTotal, getUserId } from "../store/reducer";
 import { db } from "../firebase";
+import firebase from "firebase";
+import CurrencyFormat from "react-currency-format";
 function Checkout() {
   const [{ user, basket }, dispatch] = useStateValue();
   const history = useHistory();
   const [error, setError] = useState(null);
   const [disabled, setDisabled] = useState(null);
   const [processing, setProcessing] = useState("");
-  const [amount, setAmount] = useState(0);
   const [orderId, setOrderId] = useState("");
 
   useEffect(() => {
-    const amount = basket?.reduce((a, b) => a + b.price, 0);
-    setAmount(amount);
     const getClientKey = async () => {
       const res = await axios({
         method: "GET",
-        url: `/createOrder?total=${amount}`,
+        url: `/createOrder?total=${getBasketTotal(basket)}`,
       });
       setOrderId(res.data.order.id);
     };
-    if (amount > 0) {
+    if (getBasketTotal(basket) > 0) {
       setDisabled(false);
       getClientKey();
     } else {
@@ -48,49 +48,71 @@ function Checkout() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setProcessing(true);
-    const options = {
-      key: "rzp_test_ULaAj7XZQ3AJZJ",
-      amount: `${amount.toString()}`,
-      currency: "INR",
-      name: "Amazon Clone",
-      description: "Payment for your  fake order.",
-      image: "http://pngimg.com/uploads/amazon/amazon_PNG27.png",
-      order_id: `${orderId}`,
-      handler: function (response) {
-        // alert(response.razorpay_payment_id);
-        // alert(response.razorpay_order_id);
-        // alert(response.razorpay_signature);
+  };
 
-        db.collection("users")
-          .doc(user?.uid)
-          .collection("orders")
-          .doc(response.razorpay_payment_id)
-          .set({
-            basket: basket,
-            amount: amount,
-            orderId: response.razorpay_order_id,
-            signature: response.razorpay_signature,
-            status: "Under Processing",
-          });
+  useEffect(() => {
+    if (processing) {
+      const userID = getUserId(user);
+      const options = {
+        key: "rzp_test_ULaAj7XZQ3AJZJ",
+        amount: `${getBasketTotal(basket).toString()}`,
+        currency: "INR",
+        name: "Amazon Clone",
+        description: "Payment for your  fake order.",
+        image: "http://pngimg.com/uploads/amazon/amazon_PNG27.png",
+        order_id: `${orderId}`,
+        handler: function (response) {
+          // alert(response.razorpay_payment_id);
+          // alert(response.razorpay_order_id);
+          // alert(response.razorpay_signature);
+          console.log("A: ", response);
+          updateToDatabase(response);
+        },
+        prefill: {
+          name: "Amazon Clone LLC",
+          email: "clone.amazon@fake.com",
+          contact: "9999999999",
+        },
+        theme: {
+          color: "#f0c14b",
+        },
+      };
+
+      const paymentObject = new window.Razorpay(options);
+      paymentObject.open();
+      paymentObject.on("payment.failed", function (response) {
+        setError(response.error.reason);
+      });
+    }
+  }, [orderId, processing]);
+
+  const updateToDatabase = (response) => {
+    const total = getBasketTotal(basket);
+    console.log("B :", response);
+    console.log(total);
+    db.collection("users")
+      .doc(user?.uid)
+      .collection("orders")
+      .doc(response.razorpay_payment_id)
+      .set({
+        basket: basket,
+        amount: total,
+        orderId: response.razorpay_order_id,
+        signature: response.razorpay_signature,
+        created: firebase.firestore.FieldValue.serverTimestamp(),
+        status: "Under Processing",
+      })
+      .then(() => {
         dispatch({
           type: "EMPTY_CART",
         });
-        history.replace("/orders");
-      },
-      prefill: {
-        name: "Amazon Clone LLC",
-        email: "clone.amazon@fake.com",
-        contact: "9999999999",
-      },
-      theme: {
-        color: "#f0c14b",
-      },
-    };
-    const paymentObject = new window.Razorpay(options);
-    paymentObject.open();
-    paymentObject.on("payment.failed", function (response) {
-      setError(response.error.reason);
-    });
+        history.replace(
+          `/processPayment/${response.razorpay_payment_id}/${response.razorpay_signature}`
+        );
+      })
+      .catch((error) => {
+        console.error("Error writing document: ", error);
+      });
   };
 
   return (
@@ -103,11 +125,11 @@ function Checkout() {
           </div>
           <div className="checkout_section_address">
             <strong>Abhimanyu Dwivedi</strong>
-            <p>554/400 Barha, Bheem Nagar</p>
+            <p>XYX Colony Road , Bheem Nagar</p>
             <p>Lane Number 3 Alambagh</p>
             <p>LUCKNOW, UTTAR PRADESH 226005</p>
             <p>India</p>
-            <p> Phone: 9044881968</p>
+            <p> Phone: 9044551212</p>
           </div>
         </div>
 
@@ -136,7 +158,21 @@ function Checkout() {
             <h3>3. Payment Details</h3>
           </div>
           <div className="checkout_section_paymentDetails">
-            <p>Card Number</p>
+            <CurrencyFormat
+              renderText={(value) => (
+                <>
+                  <p>
+                    Total Payable Amount: <strong>{value}</strong>
+                  </p>
+                </>
+              )}
+              decimalScale={2}
+              value={getBasketTotal(basket)}
+              displayType={"text"}
+              thousandSeparator={true}
+              prefix={"Rs. "}
+            />
+
             <form onSubmit={handleSubmit}>
               <button
                 className="checkout_section_paymentDetailsBtn"

@@ -1,0 +1,20 @@
+.payment_processing {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  flex-direction: column;
+}
+
+.payment_processing_details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: white;
+  padding: 50px;
+}
+
+.payment_processing_details_p {
+  font-size: large;
+  font-weight: 500;
+}

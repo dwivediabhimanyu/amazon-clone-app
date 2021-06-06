@@ -5,6 +5,7 @@ const cors = require("cors");
 const PaymentRoute = require("./payment/PaymentRoute");
 const app = express();
 app.use(cors());
+app.use(express.json());
 
 app.use("/api", PaymentRoute);
 

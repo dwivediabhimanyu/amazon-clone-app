@@ -1,6 +1,5 @@
 const Razorpay = require("razorpay");
 const { v4: uuidv4 } = require("uuid");
-const formidable = require("formidable");
 const crypto = require("crypto");
 
 let orderId = "";
@@ -37,23 +36,20 @@ exports.createOrder = (req, res) => {
   }
 };
 
-exports.paymentCallback = (req, res) => {
-  console.log("Here");
-  const form = formidable();
-  form.parse(req, (err, fields, files) => {
-    if (fields) {
-      const generated_signature = crypto
-        .createHmac("sha256", process.env.SECRET)
-        .update(orderId + "|" + fields.razorpay_payment_id)
-        .digest("hex");
-      console.log(generated_signature === fields.razorpay_signature);
-      res.status(200).json({
-        message: "All Good!",
-      });
-    } else {
-      res.status(400).json({
-        message: "Signature not matched",
-      });
-    }
-  });
+exports.verifyPayment = (req, res) => {
+  console.log(req.body);
+  if (req.body.paymentId && req.body.signature) {
+    const generated_signature = crypto
+      .createHmac("sha256", process.env.SECRET)
+      .update("order_HJMlwn1gqorIRB" + "|" + req.body.paymentId)
+      .digest("hex");
+    console.log(generated_signature === req.body.signature);
+    res.status(200).json({
+      isValid: true,
+    });
+  } else {
+    res.status(400).json({
+      isValid: false,
+    });
+  }
 };

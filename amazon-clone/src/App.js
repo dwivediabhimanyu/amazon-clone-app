@@ -11,6 +11,7 @@ import { auth } from "./firebase";
 import ProtectedRoute from "./ProtectedRoute";
 import AuthProvider from "./firebaseAuthContext";
 import { useStateValue } from "./StateProvider";
+import PaymentProcessing from "./Components/PaymentProcessing";
 
 function App() {
   const [{ user }, dispatch] = useStateValue();
@@ -38,6 +39,12 @@ function App() {
             <Route path="/login">
               <Login />
             </Route>
+            <ProtectedRoute
+              redirectTo="/login"
+              path="/processPayment/:paymentId/:signature"
+            >
+              <PaymentProcessing />
+            </ProtectedRoute>
             <ProtectedRoute redirectTo="/login" path="/orders">
               <Header />
               <Orders />

@@ -1,9 +1,9 @@
 const express = require("express");
-const { createOrder, paymentCallback } = require("./PaymentController");
+const { createOrder, verifyPayment } = require("./PaymentController");
 const router = express.Router();
 
 router.get("/createOrder", createOrder);
-router.post("/callback", paymentCallback);
+router.post("/verifyPayment", verifyPayment);
 
 router.get("/", (req, res) => {
   res.send("hello");
