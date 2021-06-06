@@ -39,6 +39,7 @@ exports.createOrder = (req, res) => {
 exports.verifyPayment = (req, res) => {
   console.log(req.body);
   if (req.body.paymentId && req.body.signature) {
+    // TODO : Fix Issue Hash not macthing
     const generated_signature = crypto
       .createHmac("sha256", process.env.SECRET)
       .update("order_HJMlwn1gqorIRB" + "|" + req.body.paymentId)

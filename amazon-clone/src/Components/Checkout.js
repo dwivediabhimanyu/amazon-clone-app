@@ -52,9 +52,8 @@ function Checkout() {
 
   useEffect(() => {
     if (processing) {
-      const userID = getUserId(user);
       const options = {
-        key: "rzp_test_ULaAj7XZQ3AJZJ",
+        key: process.env.REACT_APP_RP_ID,
         amount: `${getBasketTotal(basket).toString()}`,
         currency: "INR",
         name: "Amazon Clone",
